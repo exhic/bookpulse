@@ -1,0 +1,27 @@
+name: Send Push Notification
+
+on:
+  # 매주 월/수/금 오전 8시 KST (= UTC 23:00 전날)
+  schedule:
+    - cron: '0 23 * * 0,2,4'
+  # 수동 실행도 가능
+  workflow_dispatch:
+
+jobs:
+  send-notification:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python 설치
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 패키지 설치
+        run: pip install firebase-admin requests
+
+      - name: 최신 콘텐츠 확인 및 푸시 발송
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: python scripts/send_notification.py

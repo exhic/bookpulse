@@ -1,0 +1,40 @@
+name: bookpulse
+description: AI 책 요약 구독 서비스
+
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Firebase
+  firebase_core: ^4.7.0
+  firebase_messaging: ^16.2.0
+  cloud_firestore: ^6.3.0
+
+  # 콘텐츠 로드 (GitHub API)
+  http: ^1.2.1
+
+  # 마크다운 렌더링
+  flutter_markdown: ^0.6.22
+  markdown: ^7.2.2
+
+  # 상태 관리
+  flutter_riverpod: ^2.5.1
+
+  # 기타
+  shared_preferences: ^2.2.3
+  url_launcher: ^6.2.6
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true

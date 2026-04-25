@@ -1,0 +1,37 @@
+name: Deploy to Firebase Hosting
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/**'   # 새 책 요약이 올라올 때만 트리거
+      - 'app/**'        # 앱 코드 변경시에도 트리거
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Flutter 설치
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+
+      - name: 의존성 설치
+        working-directory: ./app
+        run: flutter pub get
+
+      - name: Flutter Web 빌드
+        working-directory: ./app
+        run: flutter build web --release --base-href /
+
+      - name: Firebase Hosting 배포
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: live
+          projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
+          entryPoint: ./app
