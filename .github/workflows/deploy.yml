@@ -6,6 +6,7 @@ on:
     paths:
       - 'content/**'   # 새 책 요약이 올라올 때만 트리거
       - 'app/**'        # 앱 코드 변경시에도 트리거
+  workflow_dispatch:   # 수동 실행 허용
 
 jobs:
   build-and-deploy:
