@@ -13,10 +13,14 @@ class NotificationService {
   /// 푸시 탭 핸들러는 BuildContext 가 없으므로 이 키로 화면을 푸시한다.
   static final navigatorKey = GlobalKey<NavigatorState>();
 
+  /// 전체 구독자 발송용 FCM 토픽. send_notification.py 의 BROADCAST_TOPIC 과 일치.
+  static const _broadcastTopic = 'all';
+
   /// 앱 시작 시 한 번 호출
   static Future<void> initialize() async {
     await _messaging.requestPermission(alert: true, badge: true, sound: true);
     await _saveToken();
+    await _messaging.subscribeToTopic(_broadcastTopic);
 
     // 포그라운드 메시지: 그냥 로그만. (인앱 배너는 필요해지면 추가)
     FirebaseMessaging.onMessage.listen((message) {

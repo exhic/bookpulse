@@ -9,7 +9,12 @@ import re
 from pathlib import Path
 
 import firebase_admin
-from firebase_admin import credentials, messaging, firestore
+from firebase_admin import credentials, messaging
+
+# 전체 구독자에게 보낼 때 사용하는 FCM 토픽 이름.
+# 앱은 시작 시 이 토픽을 subscribeToTopic('all') 로 구독한다.
+BROADCAST_TOPIC = "all"
+
 
 # ── Firebase 초기화 ──────────────────────────────────────────────────────
 
@@ -42,18 +47,10 @@ def get_latest_content() -> dict | None:
     }
 
 
-def send_to_all_subscribers(title: str, body: str, filename: str):
-    """Firestore에 저장된 모든 FCM 토큰으로 푸시를 발송합니다."""
-    db = firestore.client()
-    tokens_ref = db.collection("fcm_tokens")
-    tokens = [doc.to_dict()["token"] for doc in tokens_ref.stream()]
-
-    if not tokens:
-        print("⚠️  구독자가 없습니다.")
-        return
-
-    # FCM Multicast (한 번에 최대 500개)
-    message = messaging.MulticastMessage(
+def send_to_topic(title: str, body: str, filename: str):
+    """전체 구독자(BROADCAST_TOPIC) 에게 푸시를 발송합니다."""
+    message = messaging.Message(
+        topic=BROADCAST_TOPIC,
         notification=messaging.Notification(title=f"📚 {title}", body=body),
         data={
             "type": "new_summary",
@@ -61,11 +58,10 @@ def send_to_all_subscribers(title: str, body: str, filename: str):
             "title": title,
             "click_action": "FLUTTER_NOTIFICATION_CLICK",
         },
-        tokens=tokens,
     )
 
-    response = messaging.send_each_for_multicast(message)
-    print(f"✅ 발송 완료: 성공 {response.success_count} / 실패 {response.failure_count}")
+    message_id = messaging.send(message)
+    print(f"✅ 발송 완료 (topic={BROADCAST_TOPIC}): {message_id}")
 
 
 # ── 실행 ─────────────────────────────────────────────────────────────────
@@ -76,7 +72,7 @@ if __name__ == "__main__":
 
     if content:
         print(f"📖 발송 콘텐츠: {content['title']}")
-        send_to_all_subscribers(
+        send_to_topic(
             title=content["title"],
             body=content["summary"],
             filename=content["filename"],
