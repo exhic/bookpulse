@@ -1,1 +1,30 @@
-{"flutter":{"platforms":{"dart":{"lib/firebase_options.dart":{"projectId":"bookpulse-58e07","configurations":{"android":"1:66071509812:android:7500bdc5437de097818361","ios":"1:66071509812:ios:53465d74bbe31535818361","web":"1:66071509812:web:7a47b7a746a059de818361"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "bookpulse-58e07",
+          "configurations": {
+            "android": "1:66071509812:android:7500bdc5437de097818361",
+            "ios": "1:66071509812:ios:53465d74bbe31535818361",
+            "web": "1:66071509812:web:7a47b7a746a059de818361"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
