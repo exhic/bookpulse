@@ -42,7 +42,7 @@ def get_latest_content() -> dict | None:
     }
 
 
-def send_to_all_subscribers(title: str, body: str):
+def send_to_all_subscribers(title: str, body: str, filename: str):
     """Firestore에 저장된 모든 FCM 토큰으로 푸시를 발송합니다."""
     db = firestore.client()
     tokens_ref = db.collection("fcm_tokens")
@@ -55,7 +55,12 @@ def send_to_all_subscribers(title: str, body: str):
     # FCM Multicast (한 번에 최대 500개)
     message = messaging.MulticastMessage(
         notification=messaging.Notification(title=f"📚 {title}", body=body),
-        data={"type": "new_summary"},
+        data={
+            "type": "new_summary",
+            "filename": filename,
+            "title": title,
+            "click_action": "FLUTTER_NOTIFICATION_CLICK",
+        },
         tokens=tokens,
     )
 
@@ -74,4 +79,5 @@ if __name__ == "__main__":
         send_to_all_subscribers(
             title=content["title"],
             body=content["summary"],
+            filename=content["filename"],
         )

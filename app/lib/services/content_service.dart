@@ -45,4 +45,11 @@ class ContentService {
       return null;
     }
   }
+
+  /// 푸시 알림에서 전달된 파일명으로 단일 콘텐츠를 가져옵니다.
+  Future<BookSummary?> fetchByFilename(String filename) async {
+    final url =
+        'https://raw.githubusercontent.com/$_githubOwner/$_githubRepo/main/$_contentPath/$filename';
+    return _fetchOne(filename, url);
+  }
 }
