@@ -12,6 +12,7 @@ GitHub Actions notify.yml 에서 실행됩니다.
 import os
 import json
 import re
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import firebase_admin
@@ -19,6 +20,7 @@ from firebase_admin import credentials, messaging, firestore
 
 BROADCAST_TOPIC = "all"
 FCM_TOPIC_BATCH_SIZE = 1000  # Admin SDK subscribe_to_topic 한 번 호출 제한
+KST = timezone(timedelta(hours=9))
 
 
 # ── Firebase 초기화 ──────────────────────────────────────────────────────
@@ -38,6 +40,12 @@ def get_latest_content() -> dict | None:
         return None
 
     latest = md_files[0]
+    today_kst = datetime.now(KST).strftime("%Y%m%d")
+    file_date = latest.name[:8]
+    if file_date != today_kst:
+        print(f"⏭️  최신 콘텐츠({latest.name})가 오늘({today_kst})자가 아님 — 푸시 스킵")
+        return None
+
     text = latest.read_text(encoding="utf-8")
 
     title_match = re.search(r'^title:\s*["\']?(.+?)["\']?\s*$', text, re.MULTILINE)
